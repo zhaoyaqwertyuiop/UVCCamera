@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextureView
+            android:id="@+id/textureView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <com.serenegiant.widget.UVCCameraTextureView
+            android:id="@+id/textureView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#00000000">
+
+        <Button
+            android:id="@+id/initUSBMonitor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="initUSBMonitor"/>
+
+        <Button
+            android:id="@+id/select1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="select1"/>
+
+        <Button
+            android:id="@+id/scankit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="识别"/>
+
+        <Button
+            android:id="@+id/takePicture1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="拍照1"/>
+
+        <Button
+            android:id="@+id/takePicture2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="拍照2"/>
+    </LinearLayout>
+
+</FrameLayout>

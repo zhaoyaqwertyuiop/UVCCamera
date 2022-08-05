@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+    Android Wheel Control.
+    http://android-devblog.blogspot.com/2010/05/wheel-ui-contol.html
+   
+    Copyright 2010 Yuri Kanivets
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+	<gradient
+		android:startColor="#70D4D4D4"
+		android:centerColor="#70D4D4D4"
+		android:endColor="#70D4D4D4"
+		android:angle="90" />
+
+	<stroke android:width="1dp" android:color="#00333333" />
+</shape>
+<!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android">-->
+
+	<!--&lt;!&ndash;    沒有右边框的shape    &ndash;&gt;-->
+	<!--<item>-->
+		<!--<shape>-->
+			<!--<corners-->
+				<!--android:bottomLeftRadius="0dp"-->
+				<!--android:bottomRightRadius="0dp"-->
+				<!--android:topLeftRadius="0dp"-->
+				<!--android:topRightRadius="0dp" />-->
+			<!--&lt;!&ndash;    边框颜色    &ndash;&gt;-->
+			<!--<solid android:color="#808080"/>-->
+		<!--</shape>-->
+	<!--</item>-->
+	<!--&lt;!&ndash;    想保留哪一边就设置哪一边边框就好了，列如只有上边框：top="1dp"    &ndash;&gt;-->
+	<!--<item android:top="1dp" android:bottom="1dp">-->
+		<!--<shape>-->
+			<!--<corners-->
+				<!--android:bottomLeftRadius="0dp"-->
+				<!--android:bottomRightRadius="0dp"-->
+				<!--android:topLeftRadius="0dp"-->
+				<!--android:topRightRadius="0dp" />-->
+			<!--<solid android:color="#00ffffff"/>-->
+		<!--</shape>-->
+	<!--</item>-->
+
+<!--</layer-list>-->
