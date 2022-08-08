@@ -27,9 +27,8 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
-    fun Pair<Int, Int>.toString() = "${this.first}x${this.second}"
-
-    var getBitmap = false
+    var takePicture = false
+    var scanCode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,30 +36,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
         initUSBMonitor()
 
-        findViewById<View>(R.id.initUSBMonitor).setOnClickListener {
+        openNext.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
-//            val usbManager = USBMonitorUtilHeight.getUSBManager(this)
-//            usbManager?.let {
-//                val device = USBMonitorUtilHeight.findDevice(it.mUSBMonitor)
-//                if (device != null) {
-//                    it.mUSBMonitor.requestPermission(device)
-//                }
-//            }
         }
 
-        findViewById<View>(R.id.select1).setOnClickListener {
-//            val list = listOf(
-//                USBMonitorUtilHeight.resolution1,
-//                USBMonitorUtilHeight.resolution2,
-//                USBMonitorUtilHeight.resolution3,
-//                USBMonitorUtilHeight.resolution4,
-//                USBMonitorUtilHeight.resolution5,
-//                USBMonitorUtilHeight.resolution6,
-//                USBMonitorUtilHeight.resolution7,
-//                USBMonitorUtilHeight.resolution8,
-//                USBMonitorUtilHeight.resolution9,
-//                USBMonitorUtilHeight.resolution10,
-//            )
+        select.setOnClickListener {
             val list = USBMonitorUtilHeight.getSupportedSizeList(this)?: listOf()
             OnlyWheelPop(this, "选择分辨率", list, object : OnlyWheelPop.WheelCallBack{
                 override fun setItemText(position: Int): String {
@@ -69,81 +49,40 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
                 override fun resultCallBack(position: Int) {
                     val item = list[position]
-//                    select1.text = item.toString()
-//                    textureView1.resize(item.first, item.second)
-//                    USBMonitorUtilHeight.initUSBMonitor(this@MainActivity, textureView1, item.first, item.second)
-//                    USBMonitorUtilLeft.changeSize(this@MainActivity, item.width, item.height, textureView1)
                     USBMonitorUtilHeight.changeSize(this@MainActivity, item.width, item.height)
-
-//                    val usbManager = USBMonitorUtilHeight.getUSBManager(this@MainActivity)
-//                    usbManager?.let {
-//                        val device = USBMonitorUtilHeight.findDevice(it.mUSBMonitor)
-//                        if (device != null) {
-//                            it.mUSBMonitor.requestPermission(device)
-//                        }
-//                    }
+                    select.text = "${item.width}*${item.height}"
                 }
             }).showPop()
         }
 
-        scankit.setOnClickListener {
-//            launch {
-////                val options = HmsScanAnalyzerOptions.Creator().setHmsScanTypes(HmsScan.QRCODE_SCAN_TYPE, HmsScan.DATAMATRIX_SCAN_TYPE, HmsScan.ALL_SCAN_TYPE).setPhotoMode(true).create()
-//                val options = HmsScanAnalyzerOptions.Creator().setHmsScanTypes(HmsScan.CODE128_SCAN_TYPE).setPhotoMode(true).create()
-////                val options = HmsScanAnalyzerOptions.Creator().setPhotoMode(true).create()
-//                val hmsScans = ScanUtil.decodeWithBitmap(this@MainActivity, mBitmap, options)
-//// 处理扫码结果
-//                withContext(Dispatchers.Main) {
-//                    if (hmsScans != null && hmsScans.size > 0) {
-//                        // 展示扫码结果
-//                        Toast.makeText(this@MainActivity, "识别成功:${hmsScans[0].originalValue}", Toast.LENGTH_SHORT).show()
-//                        Log.d("scan", "识别成功:${hmsScans[0].originalValue}")
-//                    } else {
-//                        Toast.makeText(this@MainActivity, "识别失败", Toast.LENGTH_SHORT).show()
-//                        Log.d("scan", "识别失败")
-//                    }
-//                }
-//            }
-//            val mBitmap = textureView1.captureStillImage()
-//            scankitCode(mBitmap)
-
-            getBitmap = true
+        scankit.setOnClickListener { // 识别bitmap
+            scanCode = true
         }
 
-        findViewById<View>(R.id.takePicture1).setOnClickListener {
-//            USBMonitorUtilHeight.capture(this, "${this@MainActivity.getExternalFilesDir("capture/height")?.absolutePath}/${getFileName()}")
-//            USBMonitorUtilHeight.capture(this)
-            getBitmap = true
-        }
-
-        findViewById<View>(R.id.takePicture2).setOnClickListener {
-//            USBMonitorUtilLeft.capture(this, this@MainActivity.getExternalFilesDir("capture/left")?.absolutePath)
-            USBMonitorUtilLeft.capture(this, "${this@MainActivity.getExternalFilesDir("capture/left")?.absolutePath}/${getFileName()}")
-//            USBMonitorUtilLeft.capture(this)
+        takePicture1.setOnClickListener { // 拍照
+            takePicture = true
         }
     }
 
 
-    fun initUSBMonitor() {
+    private fun initUSBMonitor() {
         USBMonitorUtilHeight.initUSBMonitor(this, textureView1) {
-//        USBMonitorUtilLeft.initUSBMonitor(this, textureView1) {
-//            LogUtil.d("USBMonitorUtilHeight", "onFrame")
-//            LogUtil.d("onFrame -> ${Thread.currentThread()}")
             val bitmap = USBMonitorUtilHeight.frame2Bitmap(this, it)
-//            val bitmap = USBMonitorUtilLeft.frame2Bitmap(this, it)
             bitmap?.let {
                 onBitmap(it)
             }
         }
-//        USBMonitorUtilLeft.initUSBMonitor(this, textureView2, 640, 480) {
-//            LogUtil.d("USBMonitorUtilLeft", "onFrame")
-//        }
     }
 
     private fun onBitmap(bitmap: Bitmap) {
         LogUtil.d("USBMonitorUtilHeight", "onFrame true")
-        if (getBitmap) {
-            getBitmap = false
+
+        if (scanCode) {
+            scanCode = false
+            scankitCode(bitmap)
+        }
+        if (takePicture) {
+            takePicture = false
 
             val path = "${this@MainActivity.getExternalFilesDir("capture/height/onFrame")?.absolutePath}/${getFileName()}"
             try {
@@ -168,8 +107,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-            scankitCode(bitmap)
         }
     }
 

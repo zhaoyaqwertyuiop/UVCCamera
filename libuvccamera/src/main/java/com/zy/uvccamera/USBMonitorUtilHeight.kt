@@ -24,7 +24,7 @@ object USBMonitorUtilHeight: USBMonitorUtilBase() {
     val resolution9 = Pair(2592, 1944)
     val resolution10 = Pair(3264, 2448)
 
-    val resolution = resolution5 // 使用的分辨率
+    val resolution = resolution1 // 使用的分辨率
 
     private const val vendorid = 6935
     private const val productId = 1336
@@ -34,6 +34,7 @@ object USBMonitorUtilHeight: USBMonitorUtilBase() {
     }
 
     override fun findDevice(usbDeviceList: List<UsbDevice>): UsbDevice? {
-        return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
+//        return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
+        return usbDeviceList.getOrNull(0)
     }
 }
