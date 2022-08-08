@@ -31,8 +31,8 @@ object USBMonitorUtilLeft: USBMonitorUtilBase() {
         return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
     }
 
-    fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView?, mIFrameCallback: IFrameCallback? = null) {
-        super.initUSBMonitor(context, mTextureView, resolution.first, resolution.second, mIFrameCallback)
+    fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView?, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {
+        super.initUSBMonitor(context, resolution.first, resolution.second, mTextureView, errCallback, mIFrameCallback)
     }
 
 }

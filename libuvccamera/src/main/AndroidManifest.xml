@@ -42,7 +42,7 @@
             android:value="true"/>
 
         <provider
-            android:name="com.zy.uvccamera.ZYFileProvider"
+            android:name="com.zy.uvccamera.UVCFileProvider"
             android:authorities="${applicationId}.libuvccamera.provider"
             android:exported="false"
             android:grantUriPermissions="true" >

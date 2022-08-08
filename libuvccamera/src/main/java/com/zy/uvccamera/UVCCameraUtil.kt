@@ -26,7 +26,6 @@ class UVCCameraUtil {
     private var mIsPreviewing = false
     private var mIsRecording = false
     private var willPreview = false
-    private var mWeakOwner: WeakReference<LifecycleOwner>? = null // 当前正在使用摄像头的owner
 
     var mUVCCamera: UVCCamera? = null
         private set
@@ -38,6 +37,7 @@ class UVCCameraUtil {
     private val mVideoEncoder: MediaVideoBufferEncoder? = null
 
     private val previewWateMastTime = 1000 // 准备preview最多等待时间，超过则跳出循环，preview失败
+    private var exception: Exception? = null
 
     open class UVCCameraConfig {
         var mWidth = 640
@@ -45,10 +45,11 @@ class UVCCameraUtil {
         var mPreviewMode = UVCCamera.FRAME_FORMAT_MJPEG // FRAME_FORMAT_YUYV(0) or FRAME_FORMAT_MJPEG(1)
         val mBandwidthFactor = 0f
         var mIFrameCallback2: IFrameCallback? = null
-        var textureView: TextureView? = null
+        var textureView: WeakReference<TextureView>? = null
+        var errCallback: ((Exception) -> Unit)? = null // 错误回调
     }
 
-    fun open(owner: LifecycleOwner, ctrlBlock: UsbControlBlock?) {
+    fun open(ctrlBlock: UsbControlBlock?) {
 
         try {
             destory()
@@ -57,7 +58,9 @@ class UVCCameraUtil {
             mUVCCamera = camera
             mIsPreviewing = false
 //            callOnOpen()
+            exception = null
         } catch (e: Exception) {
+            exception = e
             e.printStackTrace()
 //            callOnError(e)
         }
@@ -65,15 +68,20 @@ class UVCCameraUtil {
 
     fun destory() {
         LogUtil.d(TAG, "destory:")
-        mUVCCamera?.startPreview()
+        mUVCCamera?.stopPreview()
         mUVCCamera?.destroy()
         mUVCCamera = null
     }
 
     fun startPreview(owner: LifecycleOwner, config: UVCCameraConfig) {
-        LogUtil.d(TAG, "handleStartPreview:")
-        if (mUVCCamera == null) return
-        if (mIsPreviewing && owner == mWeakOwner?.get()) return
+        LogUtil.d(TAG, "StartPreview:$owner")
+        if (mUVCCamera == null) {
+            exception?.let {
+                config.errCallback?.invoke(it)
+            }
+            return
+        }
+        if (mIsPreviewing) return
 
         if (config.textureView == null) {
             return
@@ -83,7 +91,7 @@ class UVCCameraUtil {
         owner.lifecycleScope.launch(Dispatchers.IO) {
             var startTime = System.currentTimeMillis()
             while (willPreview && !mIsPreviewing && System.currentTimeMillis() - startTime <= previewWateMastTime) {
-                config.textureView!!.surfaceTexture?.let {
+                config.textureView?.get()?.surfaceTexture?.let {
                     doPreview(owner, config, it)
                 }
                 delay(50)
@@ -129,7 +137,6 @@ class UVCCameraUtil {
         mUVCCamera!!.updateCameraParams()
 //            synchronized(mSync) { mIsPreviewing = true }
         mIsPreviewing = true
-        mWeakOwner = WeakReference(owner)
 
         // 设置mIFrameCallback2
         config.mIFrameCallback2?.let {

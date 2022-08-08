@@ -29,8 +29,8 @@ object USBMonitorUtilHeight: USBMonitorUtilBase() {
     private const val vendorid = 6935
     private const val productId = 1336
 
-    fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView?, mIFrameCallback: IFrameCallback? = null) {
-        super.initUSBMonitor(context, mTextureView, resolution.first, resolution.second, mIFrameCallback)
+    fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView?, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {
+        super.initUSBMonitor(context, resolution.first, resolution.second, mTextureView, errCallback, mIFrameCallback)
     }
 
     override fun findDevice(usbDeviceList: List<UsbDevice>): UsbDevice? {

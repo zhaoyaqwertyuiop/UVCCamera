@@ -22,6 +22,7 @@ import com.serenegiant.uvccamera.R
 import com.serenegiant.widget.UVCCameraTextureView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -45,11 +46,8 @@ abstract class USBMonitorUtilBase {
 
     private val mUVCCameraUtil = UVCCameraUtil()
 
-    /**
-     * @param mUVCCameraView 拍照使用
-     */
     @SuppressLint("RestrictedApi")
-    fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView?, mWidth: Int, mHeight: Int, mIFrameCallback: IFrameCallback? = null) {
+    fun initUSBMonitor(context: ComponentActivity, mWidth: Int, mHeight: Int, mTextureView: TextureView? = null, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {
         val mTextureView = mTextureView?:TextureView(context).apply {
             layoutParams = ViewGroup.LayoutParams(1, 1)
         }
@@ -62,7 +60,8 @@ abstract class USBMonitorUtilBase {
             this.mHeight = mHeight
             this.mPreviewMode = UVCCamera.FRAME_FORMAT_MJPEG
             this.mIFrameCallback2 = mIFrameCallback
-            this.textureView = mTextureView
+            this.textureView = WeakReference(mTextureView)
+            this.errCallback = errCallback
         }
 
         if (map.size == 0) {
@@ -76,9 +75,6 @@ abstract class USBMonitorUtilBase {
                         } else {
                             if (isFirstIn) {
                                 isFirstIn = false
-//                                map[context]?.let {
-//                                    onStart(context, mUVCCameraViewInterface)
-//                                }
 
                                 context.lifecycleScope.launch {
                                     delay(300)
@@ -98,7 +94,7 @@ abstract class USBMonitorUtilBase {
                     createNew: Boolean
                 ) {
                     context.lifecycleScope.launch {
-                        mUVCCameraUtil.open(context, ctrlBlock)
+                        mUVCCameraUtil.open(ctrlBlock)
                         mUVCCameraUtil.startPreview(context, map[context]!!)
                     }
                 }
@@ -137,16 +133,17 @@ abstract class USBMonitorUtilBase {
             fun onDestory() {
                 map.remove(context)
                 if (map.size == 0) {
+                    mUVCCameraUtil.destory()
                     mUSBMonitor?.unregister()
                     mUSBMonitor?.destroy()
-                    mUVCCameraUtil.destory()
+                    mUSBMonitor = null
                 }
             }
         })
     }
 
     // 找到设备
-    fun findDevice(mUSBMonitor: USBMonitor): UsbDevice? {
+    private fun findDevice(mUSBMonitor: USBMonitor): UsbDevice? {
         return findDevice(mUSBMonitor.getDeviceList(filter))
     }
 
@@ -209,7 +206,7 @@ abstract class USBMonitorUtilBase {
             mWidth = width
             mHeight = height
             mUVCCameraViewInterface?.let {
-                this.textureView = it
+                this.textureView = WeakReference(it)
             }
         }
 
@@ -219,7 +216,7 @@ abstract class USBMonitorUtilBase {
         }
     }
 
-    private fun onStart(owner: LifecycleOwner) {
+    fun onStart(owner: LifecycleOwner) {
         LogUtil.d(TAG, "onStart()")
 
         map[owner]?.let {
@@ -227,7 +224,7 @@ abstract class USBMonitorUtilBase {
         }
     }
 
-    private fun onStop() {
+    fun onStop() {
         LogUtil.d(TAG, "onStop()")
         mUVCCameraUtil.stopPreview()
     }
