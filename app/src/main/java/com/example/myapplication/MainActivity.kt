@@ -86,10 +86,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
             val path = "${this@MainActivity.getExternalFilesDir("capture/height/onFrame")?.absolutePath}/${getFileName()}"
             try {
-//                    val bitmap: Bitmap = mWeakCameraView.get().captureStillImage()
-                // get buffered output stream for saving a captured still image as a file on external storage.
-                // the file name is came from current time.
-                // You should use extension name as same as CompressFormat when calling Bitmap#compress.
                 val outputFile = if (TextUtils.isEmpty(path)) MediaMuxerWrapper.getCaptureFile(
                     Environment.DIRECTORY_DCIM,
                     ".png"
