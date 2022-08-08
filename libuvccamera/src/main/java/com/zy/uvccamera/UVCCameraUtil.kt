@@ -13,6 +13,7 @@ import com.serenegiant.usb.UVCCamera
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 /**
  * @description：替代 UVCCameraHandler 和 AbstractUVCCameraHandler，方便使用(一个object对应一个设备，有多个设备需要多个object)
@@ -25,6 +26,7 @@ class UVCCameraUtil {
     private var mIsPreviewing = false
     private var mIsRecording = false
     private var willPreview = false
+    private var mWeakOwner: WeakReference<LifecycleOwner>? = null // 当前正在使用摄像头的owner
 
     var mUVCCamera: UVCCamera? = null
         private set
@@ -49,6 +51,7 @@ class UVCCameraUtil {
     fun open(owner: LifecycleOwner, ctrlBlock: UsbControlBlock?) {
 
         try {
+            destory()
             val camera = UVCCamera()
             camera.open(ctrlBlock)
             mUVCCamera = camera
@@ -69,7 +72,8 @@ class UVCCameraUtil {
 
     fun startPreview(owner: LifecycleOwner, config: UVCCameraConfig) {
         LogUtil.d(TAG, "handleStartPreview:")
-        if (mUVCCamera == null || mIsPreviewing) return
+        if (mUVCCamera == null) return
+        if (mIsPreviewing && owner == mWeakOwner?.get()) return
 
         if (config.textureView == null) {
             return
@@ -125,6 +129,7 @@ class UVCCameraUtil {
         mUVCCamera!!.updateCameraParams()
 //            synchronized(mSync) { mIsPreviewing = true }
         mIsPreviewing = true
+        mWeakOwner = WeakReference(owner)
 
         // 设置mIFrameCallback2
         config.mIFrameCallback2?.let {

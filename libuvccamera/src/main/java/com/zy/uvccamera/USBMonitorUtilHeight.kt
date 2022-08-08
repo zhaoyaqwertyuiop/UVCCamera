@@ -12,7 +12,7 @@ import com.serenegiant.widget.UVCCameraTextureView
  * @author: zhaoya
  * @create：2022/6/23 0023 17:34
  */
-object USBMonitorUtilHeight: USBMonitorUtilBase() {
+object USBMonitorUtilHeight: USBMonitorUtilBase2() {
 
     // 支持的分辨率
     val resolution1 = Pair(640, 480)
