@@ -4,15 +4,13 @@ import android.hardware.usb.UsbDevice
 import android.view.TextureView
 import androidx.core.app.ComponentActivity
 import com.serenegiant.usb.IFrameCallback
-import com.serenegiant.widget.CameraViewInterface
-import com.serenegiant.widget.UVCCameraTextureView
 
 /**
  * @description：
  * @author: zhaoya
  * @create：2022/6/23 0023 17:34
  */
-object USBMonitorUtilHeight: USBMonitorUtilBase2() {
+object USBMonitorUtilHeight: USBMonitorUtilBase() {
 
     // 支持的分辨率
     val resolution1 = Pair(640, 480)
