@@ -47,10 +47,7 @@ abstract class USBMonitorUtilBase {
     private val mUVCCameraUtil = UVCCameraUtil()
 
     @SuppressLint("RestrictedApi")
-    fun initUSBMonitor(context: ComponentActivity, mWidth: Int, mHeight: Int, mTextureView: TextureView? = null, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {
-        val mTextureView = mTextureView?:TextureView(context).apply {
-            layoutParams = ViewGroup.LayoutParams(1, 1)
-        }
+    fun initUSBMonitor(context: ComponentActivity, mWidth: Int, mHeight: Int, mTextureView: TextureView, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {
         if (map.containsKey(context)) {
             return
         }
