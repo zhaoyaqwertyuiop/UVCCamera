@@ -1,5 +1,6 @@
 package com.zy.uvccamera
 
+import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
+import java.nio.ByteBuffer
 
 /**
  * @description：替代 UVCCameraHandler 和 AbstractUVCCameraHandler，方便使用(一个object对应一个设备，有多个设备需要多个object)
@@ -44,7 +46,7 @@ class UVCCameraUtil {
         var mHeight = 480
         var mPreviewMode = UVCCamera.FRAME_FORMAT_MJPEG // FRAME_FORMAT_YUYV(0) or FRAME_FORMAT_MJPEG(1)
         val mBandwidthFactor = 0f
-        var mIFrameCallback2: IFrameCallback? = null
+        var mIFrameCallback: IFrameCallback? = null
         var textureView: WeakReference<TextureView>? = null
         var errCallback: ((Exception) -> Unit)? = null // 错误回调
     }
@@ -104,6 +106,11 @@ class UVCCameraUtil {
             return
         }
         try {
+            mWidth = config.mWidth
+            mHeight = config.mHeight
+            mFrameCallback = {
+                config.mIFrameCallback?.onFrame(it)
+            }
             mUVCCamera!!.setPreviewSize(config.mWidth, config.mHeight, 1, 31, config.mPreviewMode, config.mBandwidthFactor)
         } catch (e: IllegalArgumentException) {
             try {
@@ -139,9 +146,10 @@ class UVCCameraUtil {
         mIsPreviewing = true
 
         // 设置mIFrameCallback2
-        config.mIFrameCallback2?.let {
-            mUVCCamera!!.setFrameCallback(it, UVCCamera.PIXEL_FORMAT_NV21)
-        }
+//        config.mIFrameCallback?.let {
+//            mUVCCamera!!.setFrameCallback(it, UVCCamera.PIXEL_FORMAT_NV21)
+//        }
+        mUVCCamera!!.setFrameCallback(mIFrameCallback, UVCCamera.PIXEL_FORMAT_NV21)
     }
 
     fun stopPreview() {
@@ -155,5 +163,40 @@ class UVCCameraUtil {
 //            callOnStopPreview()
         }
         LogUtil.d(TAG, "handleStopPreview:finished")
+    }
+
+    // 帧数据回调，拍照时就不往外回调了
+    private val mIFrameCallback = IFrameCallback {
+        if (getBitmap) {
+            getBitmap = false
+            val len = it.capacity()
+            val yuv = ByteArray(len)
+            it[yuv]
+
+            bitmap = YuvUtils.nv21ToBitmap(yuv, mWidth, mHeight)
+        } else {
+            mFrameCallback?.invoke(it)
+        }
+    }
+
+    // 拍照
+    private var getBitmap = false
+    private var mWidth = 0
+    private var mHeight = 0
+    private var bitmap: Bitmap? = null // 零时保存bitmap
+    private var mFrameCallback: ((ByteBuffer)-> Unit)? = null
+    suspend fun getBitmap(errTime: Long = 1000): Bitmap? {
+        getBitmap = true
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime <= errTime && bitmap == null) {
+            delay(50)
+        }
+        var result: Bitmap? = null
+        if (bitmap != null) {
+            result = Bitmap.createBitmap(bitmap)
+            bitmap!!.recycle()
+            bitmap = null
+        }
+        return result
     }
 }

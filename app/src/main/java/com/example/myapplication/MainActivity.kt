@@ -62,6 +62,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         takePicture1.setOnClickListener { // 拍照
             takePicture = true
         }
+
+        takePicture2.setOnClickListener {
+            launch {
+                USBMonitorUtilHeight.getBitmap()?.let {
+                    ImageDialog(this@MainActivity).setBitmap(it).show()
+                }
+            }
+        }
     }
 
 
@@ -91,14 +99,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     ".png"
                 ) else File(path)
                 val os = BufferedOutputStream(FileOutputStream(outputFile))
-                try {
+                os.use { os ->
                     try {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
                         os.flush()
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(this@MainActivity, "拍照成功：$path", Toast.LENGTH_LONG).show()
+                        }
                     } catch (e: IOException) {
                     }
-                } finally {
-                    os.close()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

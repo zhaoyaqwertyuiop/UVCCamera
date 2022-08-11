@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.view.TextureView
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ComponentActivity
 import androidx.fragment.app.FragmentActivity
@@ -56,7 +55,7 @@ abstract class USBMonitorUtilBase {
             this.mWidth = mWidth
             this.mHeight = mHeight
             this.mPreviewMode = UVCCamera.FRAME_FORMAT_MJPEG
-            this.mIFrameCallback2 = mIFrameCallback
+            this.mIFrameCallback = mIFrameCallback
             this.textureView = WeakReference(mTextureView)
             this.errCallback = errCallback
         }
@@ -144,19 +143,9 @@ abstract class USBMonitorUtilBase {
         return findDevice(mUSBMonitor.getDeviceList(filter))
     }
 
-    // 拍照, 需要 WRITE_EXTERNAL_STORAGE 权限
-    fun capture(activity: AppCompatActivity, path: String? = null) {
-//        map[activity]?.mCameraHandler?.let {
-//            if (it.isOpened()) {
-//                if (checkPermissionWriteExternalStorage(activity)) {
-//                    if (path.isNullOrEmpty()) {
-//                        it.captureStill()
-//                    } else {
-//                        it.captureStill(path)
-//                    }
-//                }
-//            }
-//        }
+    // 拍照获取bitmap
+    suspend fun getBitmap(): Bitmap? {
+        return mUVCCameraUtil.getBitmap()
     }
 
     private fun requestPermissions(activity: AppCompatActivity, block:() -> Unit) {
