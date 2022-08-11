@@ -1,22 +1,14 @@
 package com.zy.uvccamera
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.view.TextureView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ComponentActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
-import com.hjq.permissions.OnPermissionCallback
-import com.hjq.permissions.Permission
-import com.hjq.permissions.XXPermissions
-import com.serenegiant.dialog.MessageDialogFragmentV4
 import com.serenegiant.usb.*
 import com.serenegiant.usb.USBMonitor.OnDeviceConnectListener
 import com.serenegiant.usb.USBMonitor.UsbControlBlock
-import com.serenegiant.utils.PermissionCheck
 import com.serenegiant.uvccamera.R
 import com.serenegiant.widget.UVCCameraTextureView
 import kotlinx.coroutines.delay
@@ -143,49 +135,6 @@ abstract class USBMonitorUtilBase {
         return findDevice(mUSBMonitor.getDeviceList(filter))
     }
 
-    // 拍照获取bitmap
-    suspend fun getBitmap(): Bitmap? {
-        return mUVCCameraUtil.getBitmap()
-    }
-
-    private fun requestPermissions(activity: AppCompatActivity, block:() -> Unit) {
-        val perms = arrayOf(Permission.WRITE_EXTERNAL_STORAGE)
-        XXPermissions.with(activity)
-            .permission(perms)
-            .request(object : OnPermissionCallback {
-                override fun onGranted(permissions: MutableList<String>?, all: Boolean) {
-                    if (all) {
-                        block()
-                    }
-                }
-            })
-    }
-
-    // 動的パーミッション要求時の要求コード
-    protected val REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 0x12345
-    protected val REQUEST_PERMISSION_AUDIO_RECORDING = 0x234567
-    protected val REQUEST_PERMISSION_NETWORK = 0x345678
-    protected val REQUEST_PERMISSION_CAMERA = 0x537642
-
-    /**
-     * 外部ストレージへの書き込みパーミッションが有るかどうかをチェック
-     * なければ説明ダイアログを表示する
-     * @return true 外部ストレージへの書き込みパーミッションが有る
-     */
-    protected open fun checkPermissionWriteExternalStorage(context: FragmentActivity): Boolean {
-        if (!PermissionCheck.hasWriteExternalStorage(context)) {
-            MessageDialogFragmentV4.showDialog(
-                context,
-                REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE,
-                R.string.permission_title,
-                R.string.permission_ext_storage_request,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            )
-            return false
-        }
-        return true
-    }
-
     // 改变分辨率
     fun changeSize(owner: LifecycleOwner, width: Int, height: Int, mUVCCameraViewInterface: UVCCameraTextureView? = null) {
         map[owner]?.apply {
@@ -222,14 +171,6 @@ abstract class USBMonitorUtilBase {
         }
     }
 
-//    fun getWeight(owner: LifecycleOwner): Int? {
-//        return map[owner]?.mCameraHandler?.width
-//    }
-//
-//    fun getHeight(owner: LifecycleOwner): Int? {
-//        return map[owner]?.mCameraHandler?.height
-//    }
-
     fun frame2Bitmap(owner: LifecycleOwner, byteBuffer: ByteBuffer): Bitmap? {
         val len = byteBuffer.capacity()
         val yuv = ByteArray(len)
@@ -238,6 +179,11 @@ abstract class USBMonitorUtilBase {
         return map[owner]?.let {
             YuvUtils.nv21ToBitmap(yuv, it.mWidth, it.mHeight)
         }
+    }
+
+    // 拍照获取bitmap
+    suspend fun getBitmap(): Bitmap? {
+        return mUVCCameraUtil.getBitmap()
     }
 
     fun getSupportedSizeList(owner: LifecycleOwner): MutableList<Size>? {
