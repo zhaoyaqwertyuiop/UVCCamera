@@ -45,7 +45,7 @@ class UVCCameraUtil {
         var mWidth = 640
         var mHeight = 480
         var mPreviewMode = UVCCamera.FRAME_FORMAT_MJPEG // FRAME_FORMAT_YUYV(0) or FRAME_FORMAT_MJPEG(1)
-        val mBandwidthFactor = 0f
+        val mBandwidthFactor = 0.1f // 这个值能影响多开结果，测试0.1效果较好
         var mIFrameCallback: IFrameCallback? = null
         var textureView: WeakReference<TextureView>? = null
         var errCallback: ((Exception) -> Unit)? = null // 错误回调

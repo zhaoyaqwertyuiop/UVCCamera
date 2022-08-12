@@ -18,6 +18,23 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
+        <TextureView
+            android:id="@+id/textureView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <TextureView
+            android:id="@+id/textureView3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <TextureView
+            android:id="@+id/textureView4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
     </LinearLayout>
 
     <LinearLayout
@@ -56,6 +73,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="拍照2"/>
+
+        <Button
+            android:id="@+id/takePicture3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="拍照3"/>
+
+
+        <Button
+            android:id="@+id/start1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start1"/>
+        <Button
+            android:id="@+id/start2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start2"/>
+        <Button
+            android:id="@+id/start3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start3"/>
+        <Button
+            android:id="@+id/start4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start4"/>
     </LinearLayout>
 
 </FrameLayout>

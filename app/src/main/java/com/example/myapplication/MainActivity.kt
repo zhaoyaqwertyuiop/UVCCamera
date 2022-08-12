@@ -70,15 +70,69 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             }
         }
+
+        takePicture3.setOnClickListener {
+            textureView1.getBitmap()?.let {
+                ImageDialog(this@MainActivity).setBitmap(it).show()
+            }
+        }
+
+        start1.setOnClickListener {
+//            if (USBMonitorUtilHeight.isPreviewing()) {
+//                USBMonitorUtilHeight.onStop()
+//                textureView1.visibility = View.GONE
+//                textureView1.visibility = View.VISIBLE
+//            } else {
+//                USBMonitorUtilHeight.onStart(this)
+//            }
+        }
+
+        start2.setOnClickListener {
+
+//            USBMonitorUtilLeft.initUSBMonitor(this@MainActivity, textureView2)
+//
+//            if (USBMonitorUtilLeft.isPreviewing()) {
+//                USBMonitorUtilLeft.onStop()
+//                textureView2.visibility = View.GONE
+//                textureView2.visibility = View.VISIBLE
+//            } else {
+//                USBMonitorUtilLeft.onStart(this)
+//            }
+        }
+
+        start3.setOnClickListener {
+
+//            USBMonitorUtil3.initUSBMonitor(this@MainActivity, textureView3)
+//
+//            if (USBMonitorUtil3.isPreviewing()) {
+//                USBMonitorUtil3.onStop()
+//                textureView3.visibility = View.GONE
+//                textureView3.visibility = View.VISIBLE
+//            } else {
+//                USBMonitorUtil3.onStart(this)
+//            }
+        }
+
+        start4.setOnClickListener {
+            USBMonitorUtil4.initUSBMonitor(this@MainActivity, textureView4)
+        }
     }
 
 
     private fun initUSBMonitor() {
-        USBMonitorUtilHeight.initUSBMonitor(this, textureView1) {
-            val bitmap = USBMonitorUtilHeight.frame2Bitmap(this, it)
-            bitmap?.let {
-                onBitmap(it)
+        launch {
+            USBMonitorUtilHeight.initUSBMonitor(this@MainActivity, textureView1) {
+                val bitmap = USBMonitorUtilHeight.frame2Bitmap(this@MainActivity, it)
+                bitmap?.let {
+                    onBitmap(it)
+                }
             }
+
+            USBMonitorUtilLeft.initUSBMonitor(this@MainActivity, textureView2)
+
+            USBMonitorUtil3.initUSBMonitor(this@MainActivity, textureView3)
+
+//            USBMonitorUtil4.initUSBMonitor(this@MainActivity, textureView4)
         }
     }
 

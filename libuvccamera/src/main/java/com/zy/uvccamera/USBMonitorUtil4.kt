@@ -11,8 +11,7 @@ import com.serenegiant.widget.UVCCameraTextureView
  * @author: zhaoya
  * @create：2022/6/23 0023 17:34
  */
-object USBMonitorUtilLeft: USBMonitorUtilBase() {
-//object USBMonitorUtilLeft: UVCHandlerUtil() {
+object USBMonitorUtil4: USBMonitorUtilBase() {
 
     val resolution1 = Pair(640, 480)
     val resolution2 = Pair(320, 240)
@@ -23,13 +22,14 @@ object USBMonitorUtilLeft: USBMonitorUtilBase() {
     val resolution9 = Pair(2560, 1440)
     val resolution10 = Pair(2592, 1944)
 
-    val resolution = resolution7
+    val resolution = resolution1
 
-    val vendorid = 3141
-    val productId = 25446
+    val vendorid = 7749
+    val productId = 32802
 
     override fun findDevice(usbDeviceList: List<UsbDevice>): UsbDevice? {
-        return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
+//        return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
+        return usbDeviceList.getOrNull(3)
     }
 
     fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {

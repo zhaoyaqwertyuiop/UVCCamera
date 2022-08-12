@@ -11,6 +11,7 @@ import com.serenegiant.usb.IFrameCallback
  * @create：2022/6/23 0023 17:34
  */
 object USBMonitorUtilHeight: USBMonitorUtilBase() {
+//object USBMonitorUtilHeight: UVCHandlerUtil() {
 
     // 支持的分辨率
     val resolution1 = Pair(640, 480)
@@ -24,17 +25,16 @@ object USBMonitorUtilHeight: USBMonitorUtilBase() {
     val resolution9 = Pair(2592, 1944)
     val resolution10 = Pair(3264, 2448)
 
-    val resolution = resolution1 // 使用的分辨率
+    val resolution = resolution7 // 使用的分辨率
 
-    private const val vendorid = 6935
-    private const val productId = 1336
+    private const val vendorid = 7119
+    private const val productId = 11473
 
     fun initUSBMonitor(context: ComponentActivity, mTextureView: TextureView, errCallback: ((Exception) -> Unit)? = null, mIFrameCallback: IFrameCallback? = null) {
         super.initUSBMonitor(context, resolution.first, resolution.second, mTextureView, errCallback, mIFrameCallback)
     }
 
     override fun findDevice(usbDeviceList: List<UsbDevice>): UsbDevice? {
-//        return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
-        return usbDeviceList.getOrNull(0)
+        return usbDeviceList.find { it.vendorId == vendorid && it.productId == productId }
     }
 }

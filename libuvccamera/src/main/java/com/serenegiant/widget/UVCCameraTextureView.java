@@ -25,11 +25,6 @@ package com.serenegiant.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,8 +33,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
-
-import androidx.annotation.Nullable;
 
 import com.serenegiant.encoder.IVideoEncoder;
 import com.serenegiant.encoder.MediaEncoder;
@@ -69,9 +62,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 	private Callback mCallback;
 	/** for calculation of frame rate */
 	private final FpsCounter mFpsCounter = new FpsCounter();
-
-	private int mWidth = 640;
-	private int mHeight = 480;
 
 	public UVCCameraTextureView(final Context context) {
 		this(context, null, 0);
@@ -115,20 +105,9 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 		} else {
 			mRenderHandler.resize(width, height);
 		}
-//		if (mRenderHandler == null) {
-//			mRenderHandler = RenderHandler.createHandler(mFpsCounter, surface, mWidth, mHeight);
-//		}
 		mHasSurface = true;
 		if (mCallback != null) {
 			mCallback.onSurfaceCreated(this, getSurface());
-		}
-	}
-
-	public void resize(final int width, final int height) {
-		mWidth = width;
-		mHeight = height;
-		if (mRenderHandler != null) {
-			mRenderHandler.resize(width, height);
 		}
 	}
 
@@ -557,28 +536,6 @@ public class UVCCameraTextureView extends AspectRatioTextureView    // API >= 14
 
 				return bitmap;
 			} */
-
-			private static Bitmap createBitmap(final int[] pixels, final int offset, final int width, final int height) {
-				final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-				paint.setColorFilter(new ColorMatrixColorFilter(new ColorMatrix(new float[]{
-						0, 0, 1, 0, 0,
-						0, 1, 0, 0, 0,
-						1, 0, 0, 0, 0,
-						0, 0, 0, 1, 0
-				})));
-
-				final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-				final Canvas canvas = new Canvas(bitmap);
-
-				final Matrix matrix = new Matrix();
-				matrix.postScale(1.0f, -1.0f);
-				matrix.postTranslate(0, height);
-				canvas.concat(matrix);
-
-				canvas.drawBitmap(pixels, offset, width, 0, 0, width, height, false, paint);
-
-				return bitmap;
-			}
 
 			@Override
 			public final void run() {
